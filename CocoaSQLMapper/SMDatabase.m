@@ -272,7 +272,15 @@ NSString *const SMDatabaseErrorDomain = @"SMDatabaseErrorDomain";
             NSNumber *number = [parameter valueForKey:bindParameter.name];
             error_code = sqlite3_bind_int64(statement, bindParameter.index, [number longLongValue]);
         }
+        else if ([@"Q" isEqual:bindParameter.type]) {
+            NSNumber *number = [parameter valueForKey:bindParameter.name];
+            error_code = sqlite3_bind_int64(statement, bindParameter.index, [number unsignedLongLongValue]);
+        }
         else if ([@"c" isEqual:bindParameter.type]) {
+            NSNumber *number = [parameter valueForKey:bindParameter.name];
+            error_code = sqlite3_bind_int(statement, bindParameter.index, [number boolValue]);
+        }
+        else if ([@"B" isEqual:bindParameter.type]) {
             NSNumber *number = [parameter valueForKey:bindParameter.name];
             error_code = sqlite3_bind_int(statement, bindParameter.index, [number boolValue]);
         }
@@ -394,7 +402,17 @@ NSString *const SMDatabaseErrorDomain = @"SMDatabaseErrorDomain";
                         NSNumber *number = [NSNumber numberWithLongLong:value];
                         [result setValue:number forKey:column.name];
                     }
+                    else if ([@"Q" isEqual:column.type]) {
+                        unsigned long long value = sqlite3_column_int64(statement, column.index);
+                        NSNumber *number = [NSNumber numberWithUnsignedLongLong:value];
+                        [result setValue:number forKey:column.name];
+                    }
                     else if ([@"c" isEqual:column.type]) {
+                        BOOL value = sqlite3_column_int(statement, column.index);
+                        NSNumber *number = [NSNumber numberWithBool:value];
+                        [result setValue:number forKey:column.name];
+                    }
+                    else if ([@"B" isEqual:column.type]) {
                         BOOL value = sqlite3_column_int(statement, column.index);
                         NSNumber *number = [NSNumber numberWithBool:value];
                         [result setValue:number forKey:column.name];
